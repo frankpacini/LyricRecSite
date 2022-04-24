@@ -2,7 +2,6 @@ from django.db import models
 
 
 class Track(models.Model):
-    id = models.IntegerField(primary_key=True)
     song_id = models.IntegerField(blank=True, null=True)
     title = models.CharField(max_length=255)
     artist = models.CharField(max_length=255)
