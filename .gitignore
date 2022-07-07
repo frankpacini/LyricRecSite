@@ -1,3 +1,5 @@
 creds.txt
 token.txt
 **/__pycache__
+**/output
+embedding_dict

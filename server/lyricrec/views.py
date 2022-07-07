@@ -1,4 +1,5 @@
 import requests
+from operator import ge
 from sqlite3 import DataError
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
@@ -6,14 +7,18 @@ from django.forms.models import model_to_dict
 
 from .models import Track
 from .scraper import Scraper
+from .ml_model import MLModel
 
 scraper = Scraper()
+model = MLModel()
 
 def index(request, id):
     try:
         track = Track.objects.get(song_id=id)
+        is_new = False
     except Track.DoesNotExist:
         song_dict = scraper.get(id)
+        is_new = True
         if song_dict is None:
             response = HttpResponse("No track found")
             response.status_code = 404
@@ -21,7 +26,15 @@ def index(request, id):
         else:
             track = Track(**song_dict)
             track.save()
-    return HttpResponse("{} by {}\n\n{}".format(track.title, track.artist, track.lyrics))
+
+    out = model(track.song_id, track.lyrics, is_new)
+    rec_tracks = [model_to_dict(Track.objects.get(song_id=id)) for id in out[:,0]]
+    for i in range(len(rec_tracks)):
+        rec_tracks[i]['similarity_score'] = str(out[i,1])
+
+    print("{} by {}".format(track.title, track.artist))
+    return JsonResponse({'recommendations': rec_tracks})
+    # return HttpResponse("{} by {}\n\n{}".format(track.title, track.artist, track.lyrics))
 
 
 session = requests.Session()

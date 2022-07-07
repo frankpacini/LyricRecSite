@@ -42,19 +42,19 @@ def text_to_embedding(tokenizer, model, in_text):
     #  (3) Append the '[SEP]' token to the end.
     #  (4) Map tokens to their IDs.
     print("Tokenizing...")
-    output_path = "./output/bert_tokens"
-    if os.path.isfile(output_path):
-        results = read_file(output_path)
-    else:
-        results = tokenizer(
-            in_text,                         # sentence to encode.
-            add_special_tokens = True,       # Add '[CLS]' and '[SEP]'
-            truncation=True,                 # Truncate all sentences.
-            max_length = MAX_LEN,            # Length to truncate to.
-            padding=True,                    # Pad to the longest sequence
-            return_attention_mask=True,      
-        )
-        write_file(output_path, results)
+    # output_path = "./output/bert_tokens"
+    # if os.path.isfile(output_path):
+    #     results = read_file(output_path)
+    # else:
+    results = tokenizer(
+        in_text,                         # sentence to encode.
+        add_special_tokens = True,       # Add '[CLS]' and '[SEP]'
+        truncation=True,                 # Truncate all sentences.
+        max_length = MAX_LEN,            # Length to truncate to.
+        padding=True,                    # Pad to the longest sequence
+        return_attention_mask=True,      
+    )
+    # write_file(output_path, results)
 
     input_ids = results.input_ids
     attn_mask = results.attention_mask
@@ -67,6 +67,9 @@ def text_to_embedding(tokenizer, model, in_text):
     # input in this batch)
     # input_ids = input_ids.unsqueeze(0)
     # attn_mask = attn_mask.unsqueeze(0)
+
+    input_ids = input_ids.to('cuda')
+    attn_mask = attn_mask.to('cuda')
 
 
     # ===========================
@@ -87,7 +90,7 @@ def text_to_embedding(tokenizer, model, in_text):
         print("Running model...")
         print(input_ids.size(), attn_mask.size())
 
-        split_size = input_ids.size()[0]//128
+        split_size = input_ids.size()[0]//512
         full_input_ids = torch.split(input_ids, split_size)
         full_attn_mask = torch.split(attn_mask, split_size)
 
@@ -101,7 +104,7 @@ def text_to_embedding(tokenizer, model, in_text):
                 token_type_ids = None,
                 attention_mask = attn_mask_batch)
             
-            print("Processing batch {}".format(batch))
+            # print("Processing batch {}".format(batch))
             hidden_states = outputs[2]
 
             # Sentence Vectors
@@ -127,21 +130,22 @@ def text_to_embedding(tokenizer, model, in_text):
 
         return sentence_embedding
 
-def Bert2Vec(df):
+def Bert2Vec(lyrics):
     # Load pre-trained model (weights)
     model = BertModel.from_pretrained('bert-base-uncased', output_hidden_states = True)
-    # model.cuda()
+    model.cuda()
 
     # Load the BERT tokenizer.
     print('Loading BERT tokenizer...')
     tokenizer = BertTokenizer.from_pretrained('bert-base-uncased', do_lower_case=True)
     
-    vectors = text_to_embedding(tokenizer, model, df['Lyrics'].tolist())
+    vectors = text_to_embedding(tokenizer, model, lyrics)
     return vectors
 
 
-s = open('../creds.txt').read().split('\n')
+s = open('creds.txt').read().split('\n')
 
+output_path = "./output/embedding_dict"
 server = 'lyricrec.database.windows.net'
 database = 'LyricRec'
 username = s[1]
@@ -152,10 +156,14 @@ print("Connecting to db with creds {} {}".format(username, password))
 with pyodbc.connect('DRIVER='+driver+';SERVER=tcp:'+server+';PORT=1433;DATABASE='+database+';UID='+username+';PWD='+ password) as conn:
     with conn.cursor() as cursor:
         print("Retrieving data from db")
-        query = "SELECT Lyrics FROM tracks;"
+        query = "SELECT song_id, lyrics FROM tracks;"
         df = pd.read_sql(query, conn)
 
+song_ids, lyrics = df['song_id'].to_list(), df['lyrics'].to_list()
+
 print("Generating embeddings")
-output_path = "./output/bert2vec"
-embeddings = Bert2Vec(df)
-write_file(output_path, embeddings)
+embeddings = Bert2Vec(lyrics)
+assert len(song_ids) == len(embeddings)
+
+embedding_dict = {song_ids[i]: torch.tensor(embeddings[i]) for i in range(len(song_ids))}
+write_file(output_path, embedding_dict)

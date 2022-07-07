@@ -26,7 +26,10 @@ class MLModel(torch.nn.Module):
         self.tokenizer = BertTokenizer.from_pretrained('bert-base-uncased', do_lower_case=True)
         self.bert = BertModel.from_pretrained('bert-base-uncased', output_hidden_states = True)
         self.bert.eval()
-        self.embeddings = torch.tensor(read_file('../embeddings'))
+
+        self.songid_to_embedding = read_file('../embedding_dict')
+        self.embedding_to_songid = {str(v): k for k,v in self.songid_to_embedding.items()}
+        self.embeddings = torch.stack(list(self.songid_to_embedding.values()))
         self.k = 6
         self.max_len = 510
 
@@ -99,17 +102,34 @@ class MLModel(torch.nn.Module):
         dist = torch.linalg.norm(x-y, p, dim=2)
         return torch.topk(dist, self.k, largest=False)
     
-    def forward(self, lyrics):
-        vectors = self.text_to_embedding([lyrics])
-        rec_vals, rec_indices = self.knn(vectors, self.embeddings)
-        out = torch.t(torch.cat((rec_indices, rec_vals))).detach().numpy()
+    def forward(self, song_id, lyrics, is_new=False):
+
+        if is_new:
+            vectors = self.text_to_embedding([lyrics])
+            self.update(song_id, vectors[0].detach().numpy())
+        else:
+            vectors = self.songid_to_embedding[song_id].unsqueeze(0)
+
+        sim_scores, indices = self.knn(vectors, self.embeddings)
+        song_ids = torch.tensor([self.embedding_to_songid[str(self.embeddings[i])] for i in indices[0]])
+        out = torch.t(torch.cat((song_ids[None,:], sim_scores))).detach().numpy()
+        
+        if song_ids[0] != song_id or sim_scores[0][0] != 0:
+            raise Exception('Closest id to {} {} is {} with sim score {}'.format(song_id, '(new)' if is_new else '',
+                                                                                    song_ids[0], sim_scores[0][0]))
         return out
+
+    def update(self, song_id, embedding):
+        self.songid_to_embedding[song_id] = embedding
+        self.embedding_to_songid[str(embedding)] = song_id
+        self.embeddings = torch.cat(self.embeddings, embedding[None, :])
+        write_file('../embedding_dict', self.songid_to_embedding)
 
 # if os.path.isfile('model.pt'):
 #     model = torch.load('model.pt')
 # else:
-model = MLModel()
+# model = MLModel()
 # torch.save(model, 'model.pt')
 
-def get_recs(lyrics):
-    return model(lyrics)
+# def get_recs(lyrics):
+#     return model(lyrics)
