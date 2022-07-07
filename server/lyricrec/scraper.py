@@ -34,6 +34,7 @@ class Scraper:
         song['page_views'] = 0 if 'pageviews' not in song_response['stats'] else song_response['stats']['pageviews']
         song['pyongs_count'] = song_response['pyongs_count']
         song['annotation_count'] = song_response['annotation_count']
+        song['thumbnail_url'] = song_response['song_art_image_thumbnail_url']
         song['lyrics'] = self.get_lyrics(id, song['title'])
 
         return song

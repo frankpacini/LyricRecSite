@@ -9,6 +9,7 @@ class Track(models.Model):
     pyongs_count = models.IntegerField(blank=True, null=True)
     annotation_count = models.IntegerField(blank=True, null=True)
     lyrics = models.CharField(max_length=8000, blank=True, null=True)
+    thumbnail_url = models.CharField(max_length=255)
 
     class Meta:
         managed = False
