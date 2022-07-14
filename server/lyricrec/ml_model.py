@@ -102,13 +102,12 @@ class MLModel(torch.nn.Module):
         dist = torch.linalg.norm(x-y, p, dim=2)
         return torch.topk(dist, self.k, largest=False)
     
-    def forward(self, song_id, lyrics, is_new=False):
-
-        if is_new:
-            vectors = self.text_to_embedding([lyrics])
-            self.update(song_id, vectors[0].detach().numpy())
-        else:
+    def forward(self, song_id, lyrics):
+        if song_id in self.songid_to_embedding:
             vectors = self.songid_to_embedding[song_id].unsqueeze(0)
+        else:
+            vectors = self.text_to_embedding([lyrics])
+            self.update(song_id, vectors[0])           
 
         sim_scores, indices = self.knn(vectors, self.embeddings)
         song_ids = torch.tensor([self.embedding_to_songid[str(self.embeddings[i])] for i in indices[0]])
@@ -122,7 +121,7 @@ class MLModel(torch.nn.Module):
     def update(self, song_id, embedding):
         self.songid_to_embedding[song_id] = embedding
         self.embedding_to_songid[str(embedding)] = song_id
-        self.embeddings = torch.cat(self.embeddings, embedding[None, :])
+        self.embeddings = torch.cat((self.embeddings, embedding[None, :]))
         write_file('../embedding_dict', self.songid_to_embedding)
 
 # if os.path.isfile('model.pt'):

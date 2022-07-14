@@ -27,7 +27,7 @@ def index(request, id):
             track = Track(**song_dict)
             track.save()
 
-    out = model(track.song_id, track.lyrics, is_new)
+    out = model(track.song_id, track.lyrics)
     rec_tracks = [model_to_dict(Track.objects.get(song_id=id)) for id in out[:,0]]
     for i in range(len(rec_tracks)):
         rec_tracks[i]['similarity_score'] = str(out[i,1])
