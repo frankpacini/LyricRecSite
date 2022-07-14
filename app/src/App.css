@@ -42,7 +42,8 @@
 .main {
   background-color:rgb(229, 239, 241);
   display: flex;
-  height: 100vh;
+  /* height: 100vh; */
+  min-height: 100vh;
   width: 100%;
   align-items: center;
   flex-direction: column;
@@ -57,8 +58,30 @@ h1 {
 
 .search {
   width: 30%;
+  z-index: 1;
 }
 
 ul li {
   font-size: 20px;
 } 
+
+.MuiTableCell-root {
+  text-align: center !important;
+}
+
+.MuiPaper-root {
+  overflow-y: clip !important;
+}
+
+.MuiTableContainer-root {
+  overflow-x: clip !important;
+  padding: 0px !important;
+}
+
+.lyrics .MuiDialog-container .MuiPaper-root {
+  max-width: 600px;
+}
+
+.compare .MuiDialog-container .MuiPaper-root {
+  max-width: 1200px;
+}
