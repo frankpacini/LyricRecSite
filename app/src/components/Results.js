@@ -3,17 +3,21 @@ import config from '../config.js'
 
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import Typography from '@material-ui/core/Typography';
 
 function Results(props) {
     const [resultsList, setResultsList] = useState([])
-    let makeRequest = (query) => {
+    let makeSearchRequest = (query) => {
         console.log(config['SERVER_URL'] + 'search/' + query + "/")
         fetch(config['SERVER_URL'] + 'search/' + query + "/")
         .then(response => response.json())
-        .then(data => setResultsList(data['results']))
+        .then(data => {
+            console.log(data)
+            setResultsList(data['results'])
+        })
         // .then(response => setResultsList(response.json()));
     }
 
@@ -51,7 +55,7 @@ function Results(props) {
             if(requestTrigger === true)
                 setRequestTrigger(false)
 
-            makeRequest(props.query)
+            makeSearchRequest(props.query)
 
             let prevQuery = props.query
             requestTimer.current = setTimeout(() => {
@@ -67,12 +71,17 @@ function Results(props) {
 
 
     return (
+        <div style={{backgroundColor: 'rgb(229, 239, 241)'}}>
         <List style={{overflow: 'auto', maxHeight: "70vh"}}>
-            {resultsList.length != 0 && resultsList.map(
+            {props.show && resultsList.length != 0 && resultsList.map(
                 result => (
-                    <ListItem key={result['id']} style={{backgroundColor: 'white', marginBottom: "1vh"}}>
+                    <ListItemButton 
+                        key={result['id']} 
+                        style={{backgroundColor: 'white', marginBottom: "1vh"}} 
+                        onClick={() => props.onResultSelect(result['id'])}
+                    >
                         <ListItemAvatar>
-                            <img src={result['header_image_thumbnail_url']} style={{maxWidth: '75px'}} />
+                            <img src={result['image_thumbnail_url']} style={{maxWidth: '75px'}} />
                         </ListItemAvatar>
                         <ListItemText primary={(result['title']).replace(/(.{60})/g, "$1\n")}
                             secondary={
@@ -87,10 +96,11 @@ function Results(props) {
                             }
                             style={{padding: "0.375rem 0.375rem 0.25rem"}}
                         />
-                    </ListItem>
+                    </ListItemButton>
                 )
             )}
         </List>
+        </div>
         // <div>
         //     {resultsList.length != 0 && resultsList.map(
         //         result => 
