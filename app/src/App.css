@@ -71,6 +71,7 @@ ul li {
 
 .MuiPaper-root {
   overflow-y: clip !important;
+  height: 100%;
 }
 
 .MuiTableContainer-root {

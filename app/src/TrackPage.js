@@ -112,16 +112,18 @@ function TrackPage(props) {
                 <TableBody>
                 {trackRecs.map((rec, i) => (
                     <TableRow key={i}>
-                        <TableCell>{i+1}.</TableCell>
-                        <TableCell>
+                        <TableCell style={{verticalAlign: "middle"}}>{i+1}.</TableCell>
+                        <TableCell style={{verticalAlign: "middle"}}>
                             <img src={rec.thumbnail_url} 
                                 style={{maxWidth: '7vh'}} />
                         </TableCell>
-                        <TableCell>{rec.title}</TableCell>
-                        <TableCell>{rec.artist}</TableCell>
+                        <TableCell style={{verticalAlign: "middle"}}>{rec.title}</TableCell>
+                        <TableCell style={{verticalAlign: "middle"}}>{rec.artist}</TableCell>
                         {/* <TableCell>{Math.round((1 - rec.similarity_score / 15) * 1000) / 1000}</TableCell> */}
-                        <TableCell>{Math.round((rec.similarity_score) * 1000) / 1000}</TableCell>
-                        <TableCell style={{padding: '0px'}}>
+                        <TableCell style={{verticalAlign: "middle"}}>
+                            {Math.round((rec.similarity_score) * 1000) / 1000}
+                        </TableCell>
+                        <TableCell style={{padding: '0px', verticalAlign: "middle"}}>
                             <Button 
                                 variant="outlined" 
                                 size="small"

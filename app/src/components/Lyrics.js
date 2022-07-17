@@ -1,4 +1,4 @@
-import { React, useState, useEffect, useRef } from 'react'
+import { React, useState, useEffect, useCallback } from 'react'
 import config from '../config.js'
 
 import Dialog from '@mui/material/Dialog';
@@ -9,11 +9,14 @@ import Box from '@mui/material/Box';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
+import Table from '@mui/material/Table';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 
 function Lyrics(props) {
     const [mode, setMode] = useState(null);
+    // const elementRef = useRef(null);
+    const [height, setHeight] = useState(0);
 
     useEffect(() => {
         if(props.rec != null) {
@@ -23,32 +26,55 @@ function Lyrics(props) {
         }
     }, [props.rec]);
 
+    const elementRef = useCallback(node => {
+        console.log(node);
+        if (node !== null) {
+            var newHeight = Math.round((node.parentNode.clientHeight - node.clientHeight) / node.parentNode.clientHeight);
+            setHeight(newHeight);
+        }
+      }, [props.open]);
+
+    // useEffect(() => {
+    //     console.log(elementRef);
+    //     if(elementRef.current?.clientHeight != undefined) {
+    //         var newHeight = Math.round((elementRef.current.parent.clientHeight - elementRef.current.clientHeight) / elementRef.current.parent.clientHeight);
+    //         console.log(newHeight);
+    //         setHeight(newHeight);
+    //     }
+    // }, [elementRef]);
+
     return (
         <Dialog className={mode} open={props.open} style={{margin: "1rem"}} onClose={props.handleClose}>
             <TableContainer>
-                <TableHead>
-                    <TableCell><h2>{props.track.title} by {props.track.artist}</h2></TableCell>
-                    {props.rec != null && (
-                        <TableCell><h2>{props.rec.title} by {props.rec.artist}</h2></TableCell>
-                    )}
-                </TableHead>
-                <TableBody>
-                    <TableRow style={{verticalAlign: 'top'}}>
-                        <TableCell style={{padding: '0px', overflowX: 'clip'}}>
-                            <Box style={{maxHeight: '100vh', overflow: 'auto', padding: '16px'}}>
-                                <Typography style={{whiteSpace: 'pre-line'}}>{props.track.lyrics}</Typography>
-                            </Box>
-                        </TableCell>
-                        
+            {/* <TableContainer style={{maxHeight: "100%", height: "100%"}}> */}
+                <Table stickyHeader>
+                    <TableHead>
+                        <TableCell><h2>{props.track.title} by {props.track.artist}</h2></TableCell>
                         {props.rec != null && (
+                            <TableCell><h2>{props.rec.title} by {props.rec.artist}</h2></TableCell>
+                        )}
+                    </TableHead>
+                    <TableBody>
+                        <TableRow style={{verticalAlign: 'top'}}>
+                        {/* <TableRow> */}
                             <TableCell style={{padding: '0px', overflowX: 'clip'}}>
-                                <Box style={{maxHeight: '100vh', overflow: 'auto', padding: '16px'}}>
-                                    <Typography style={{whiteSpace: 'pre-line'}}>{props.rec.lyrics}</Typography>
+                            {/* <TableCell> */}
+                                <Box style={{maxHeight: '70vh', overflow: 'auto', padding: '16px'}}>
+                                    <Typography style={{whiteSpace: 'pre-line'}}>{props.track.lyrics}</Typography>
                                 </Box>
                             </TableCell>
-                        )}
-                    </TableRow>
-                </TableBody>
+                            
+                            {props.rec != null && (
+                                <TableCell style={{padding: '0px', overflowX: 'clip'}}>
+                                {/* <TableCell> */}
+                                    <Box style={{maxHeight: '70vh', overflow: 'auto', padding: '16px'}}>
+                                        <Typography style={{whiteSpace: 'pre-line'}}>{props.rec.lyrics}</Typography>
+                                    </Box>
+                                </TableCell>
+                            )}
+                        </TableRow>
+                    </TableBody>
+                </Table>
             </TableContainer>
         </Dialog>
 
