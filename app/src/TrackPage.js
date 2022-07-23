@@ -86,7 +86,7 @@ function TrackPage(props) {
     return (
         <div style={{display: 'flex', marginLeft: 'auto', marginRight: 'auto', position: 'fixed', marginTop: '25vh'}}>
             <Lyrics track={track} rec={selectedRec} open={lyricsOpen} handleClose={handleLyricsClose}/>
-            <div style={{display: 'flex', marginTop: '8vh', flexDirection: 'column', marginRight: '20px', justifyContent: 'flex-start', alignItems: 'center'}}>
+            <div style={{display: 'flex', marginTop: '8vh', flexDirection: 'column', marginRight: '25px', justifyContent: 'flex-start', alignItems: 'center'}}>
                 <img src={track.thumbnail_url} 
                             style={{maxWidth: '20vh', display: 'block', marginLeft: 'auto', marginRight: 'auto'}} />
                 <h2 style={{marginBottom: '5px', textAlign: 'center'}}>{track.title}</h2>
@@ -100,7 +100,7 @@ function TrackPage(props) {
                     View Lyrics
                 </Button>
             </div>
-            <TableContainer style={{display: 'block', marginLeft: 'auto', marginRight: 'auto', marginLeft: '20px'}}>
+            <TableContainer style={{display: 'block', marginLeft: 'auto', marginRight: 'auto', marginLeft: '25px'}}>
                 <TableHead>
                     <TableCell>#</TableCell>
                     <TableCell></TableCell>

@@ -71,19 +71,20 @@ function Results(props) {
 
 
     return (
-        <div style={{backgroundColor: 'rgb(229, 239, 241)'}}>
+        <div style={{backgroundColor: 'rgb(229, 243, 250)'}}>
         <List style={{overflow: 'auto', maxHeight: "70vh"}}>
             {props.show && resultsList.length != 0 && resultsList.map(
                 result => (
                     <ListItemButton 
                         key={result['id']} 
-                        style={{backgroundColor: 'white', marginBottom: "1vh"}} 
+                        style={{backgroundColor: 'white', marginBottom: "1vh", paddingRight: '8px'}} 
                         onClick={() => props.onResultSelect(result['id'])}
                     >
                         <ListItemAvatar>
                             <img src={result['image_thumbnail_url']} style={{maxWidth: '75px'}} />
                         </ListItemAvatar>
-                        <ListItemText primary={(result['title']).replace(/(.{60})/g, "$1\n")}
+                        <ListItemText 
+                            primary={(result['title']).replace(/(.{60})/g, "$1\n")}
                             secondary={
                                 <Typography
                                     component="span"
@@ -94,7 +95,7 @@ function Results(props) {
                                     {result['artist']}
                                 </Typography>
                             }
-                            style={{padding: "0.375rem 0.375rem 0.25rem"}}
+                            style={{padding: "0.375rem 0.375rem 0.25rem 1rem"}}
                         />
                     </ListItemButton>
                 )

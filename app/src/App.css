@@ -40,7 +40,7 @@
 
 /* Custom */
 .main {
-  background-color:rgb(229, 239, 241);
+  background-color:rgb(229, 243, 250);
   display: flex;
   /* height: 100vh; */
   min-height: 100vh;
@@ -48,35 +48,62 @@
   align-items: center;
   flex-direction: column;
   row-gap: 20px;
+  /* font-family: 'Times New Roman', Times, serif; */
 }
 
 h1 {
-  margin: 10px;
-  font-size: 40px;
-  color: rgb(1, 1, 59);
+  margin: 25px 10px -10px;
+  font-size: 57px;
+  font-family: 'monoton';
+  /* color: rgb(1, 1, 59); */
+  color: rgb(47, 92, 143);
 }
 
 .search {
-  width: 30%;
+  width: min(max(30%, 200px), 400px);
   z-index: 1;
+}
+
+.MuiInputLabel-root {
+  font-family: open-sans !important;
+}
+
+.MuiInputBase-root {
+  font-family: open-sans !important;
 }
 
 ul li {
   font-size: 20px;
 } 
 
+span {
+  font-family: open-sans !important;
+}
+
+
+p {
+  font-family: lato, sans-serif !important;
+}
+
 .MuiTableCell-root {
   text-align: center !important;
+  /* font-family: open-sans !important; */
+  font-family: lato, sans-serif !important;
+  font-size: 0.9rem !important;
 }
 
 .MuiPaper-root {
   overflow-y: clip !important;
-  height: 100%;
 }
 
 .MuiTableContainer-root {
   overflow-x: clip !important;
   padding: 0px !important;
+}
+
+.MuiButton-root {
+  font-family: open-sans !important;
+  font-weight: 700 !important;
 }
 
 .lyrics .MuiDialog-container .MuiPaper-root {
@@ -85,4 +112,18 @@ ul li {
 
 .compare .MuiDialog-container .MuiPaper-root {
   max-width: 1200px;
+}
+
+/* monoton-regular - latin */
+@font-face {
+  font-family: 'Monoton';
+  font-style: normal;
+  font-weight: 400;
+  src: url('../public/fonts/monoton-v15-latin-regular.eot'); /* IE9 Compat Modes */
+  src: local(''),
+       url('../public/fonts/monoton-v15-latin-regular.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+       url('../public/fonts/monoton-v15-latin-regular.woff2') format('woff2'), /* Super Modern Browsers */
+       url('../public/fonts/monoton-v15-latin-regular.woff') format('woff'), /* Modern Browsers */
+       url('../public/fonts/monoton-v15-latin-regular.ttf') format('truetype'), /* Safari, Android, iOS */
+       url('../public/fonts/monoton-v15-latin-regular.svg#Monoton') format('svg'); /* Legacy iOS */
 }

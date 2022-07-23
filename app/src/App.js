@@ -10,7 +10,7 @@ function App() {
 
   return (
     <div className="main">
-      <h1>LyricRec</h1>
+      <h1>Lyric&nbsp;&nbsp;Rec</h1>
       <Search onTrackSelect={setId}/>
       <TrackPage trackId={id}/>
     </div>
