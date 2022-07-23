@@ -1,6 +1,7 @@
 import { React, useState, useEffect, useRef } from 'react'
 import config from '../config.js'
 
+import { makeStyles } from "@material-ui/core/styles";
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
@@ -8,7 +9,16 @@ import ListItemText from '@material-ui/core/ListItemText';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import Typography from '@material-ui/core/Typography';
 
+const useStyles = makeStyles((theme) => ({
+    background: {backgroundColor: 'rgb(229, 243, 250)'},
+    results: {overflow: 'auto', maxHeight: "70vh"},
+    result: {backgroundColor: 'white', marginBottom: "1vh", paddingRight: '8px'},
+    resultImg: {maxWidth: '75px'},
+    resultText: {padding: "0.375rem 0.375rem 0.25rem 1rem"}
+}));
+
 function Results(props) {
+    const c = useStyles();
     const [resultsList, setResultsList] = useState([])
     let makeSearchRequest = (query) => {
         console.log(config['SERVER_URL'] + 'search/' + query + "/")
@@ -18,7 +28,6 @@ function Results(props) {
             console.log(data)
             setResultsList(data['results'])
         })
-        // .then(response => setResultsList(response.json()));
     }
 
     const minWaitTime = 100
@@ -71,45 +80,36 @@ function Results(props) {
 
 
     return (
-        <div style={{backgroundColor: 'rgb(229, 243, 250)'}}>
-        <List style={{overflow: 'auto', maxHeight: "70vh"}}>
-            {props.show && resultsList.length != 0 && resultsList.map(
-                result => (
-                    <ListItemButton 
-                        key={result['id']} 
-                        style={{backgroundColor: 'white', marginBottom: "1vh", paddingRight: '8px'}} 
-                        onClick={() => props.onResultSelect(result['id'])}
-                    >
-                        <ListItemAvatar>
-                            <img src={result['image_thumbnail_url']} style={{maxWidth: '75px'}} />
-                        </ListItemAvatar>
-                        <ListItemText 
-                            primary={(result['title']).replace(/(.{60})/g, "$1\n")}
-                            secondary={
-                                <Typography
-                                    component="span"
-                                    variant="body2"
-                                    // className={classes.inline}
-                                    color="textPrimary"
-                                >
-                                    {result['artist']}
-                                </Typography>
-                            }
-                            style={{padding: "0.375rem 0.375rem 0.25rem 1rem"}}
-                        />
-                    </ListItemButton>
-                )
-            )}
-        </List>
+        <div className={c.background}>
+            <List className={c.results}>
+                {props.show && resultsList.length != 0 && resultsList.map(
+                    result => (
+                        <ListItemButton 
+                            key={result['id']} 
+                            className={c.result} 
+                            onClick={() => props.onResultSelect(result['id'])}
+                        >
+                            <ListItemAvatar>
+                                <img className={c.resultImg} src={result['image_thumbnail_url']} />
+                            </ListItemAvatar>
+                            <ListItemText 
+                                className={c.resultText}
+                                primary={(result['title']).replace(/(.{60})/g, "$1\n")}
+                                secondary={
+                                    <Typography
+                                        component="span"
+                                        variant="body2"
+                                        color="textPrimary"
+                                    >
+                                        {result['artist']}
+                                    </Typography>
+                                }
+                            />
+                        </ListItemButton>
+                    )
+                )}
+            </List>
         </div>
-        // <div>
-        //     {resultsList.length != 0 && resultsList.map(
-        //         result => 
-        //         <div key={result['id']}> 
-        //             {}
-        //         </div> 
-        //     )}
-        // </div>
     )
 }
 
